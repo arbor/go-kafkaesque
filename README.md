@@ -2,9 +2,9 @@ go-kafakesque
 --------------
 
 [![Go Documentation](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)][godocs]
-[![Build status](https://circleci.com/gh/lenfree/go-kafkaesque.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/lenfree/go-kafkaesque)
+[![Build status](https://circleci.com/gh/packetloop/go-kafkaesque.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/packetloop/go-kafkaesque)
 
-[godocs]: https://godoc.org/github.com/lenfree/go-kafkaesque
+[godocs]: https://godoc.org/github.com/packetloop/go-kafkaesque
 
 A Go binding for Kafka binding. Since I couldn't
 manage to find one, hence, write a new one. One of the intention of
@@ -14,7 +14,7 @@ having this package is to allow me to easily write a Terraform provider.
 
 Import package
 ```bash
-go get github.com/lenfree/go-kafkaesque
+go get github.com/packetloop/go-kafkaesque
 ```
 
 For package dependency management, we use dep:
@@ -46,7 +46,7 @@ package main
 import (
 	"fmt"
 
-	singularity "github.com/lenfree/go-kafkaesque"
+	singularity "github.com/packetloop/go-kafkaesque"
 )
 ```
 
