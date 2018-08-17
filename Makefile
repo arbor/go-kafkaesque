@@ -1,6 +1,3 @@
-PROJECT_NAME := go-kafkaesque
-package = github.com/lenfree/$(PROJECT_NAME)
-
 all: run coverage test
 
 .PHONY: test
