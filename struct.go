@@ -2,12 +2,12 @@ package gokafkaesque
 
 // Topic have information about a Kafka topic.
 type Topic struct {
-	Meta `json:"response"`
+	Response `json:"response"`
 }
 
-// Meta includes Kafka topic config, partitions, replication
+// Response includes Kafka topic config, partitions, replication
 // factor and name.
-type Meta struct {
+type Response struct {
 	Config            `json:"config"`
 	Partitions        int64  `json:"partitions"`
 	ReplicationFactor int64  `json:"replicationFactor"`
@@ -20,8 +20,12 @@ type Config struct {
 	SegmentBytes string `json:"segment.bytes"`
 }
 
-// Topics is a list of topic.
-type Topics []Topic
+// Topics is a list of topic names.
+type Topics struct {
+	Response struct {
+		Topics []string `json:"topics"`
+	} `json:"response"`
+}
 
 // Health returns a response of OK.
 type Health struct {
