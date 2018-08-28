@@ -1,8 +1,6 @@
 package gokafkaesque
 
 import (
-	"strconv"
-
 	"github.com/go-resty/resty"
 )
 
@@ -14,14 +12,14 @@ type Client struct {
 // serverConfig contains Kafka-admin-service HTTP endpoint and serverConfiguration for
 // retryablehttp client's retry options
 type serverConfig struct {
-	Host  string
-	Port  int
+	URL   string
 	Retry int
 }
 
+// ServerConfigBuilder sets port, host, http retry count config to
+// be passed to create a NewClient.
 type ServerConfigBuilder interface {
-	SetPort(int) ServerConfigBuilder
-	SetHost(string) ServerConfigBuilder
+	SetURL(string) ServerConfigBuilder
 	SetRetry(int) ServerConfigBuilder
 	Build() serverConfig
 }
@@ -31,9 +29,10 @@ func NewConfig() ServerConfigBuilder {
 	return &serverConfig{}
 }
 
-// SetHost accepts a string and sets the host in serverConfig.
-func (co *serverConfig) SetHost(host string) ServerConfigBuilder {
-	co.Host = host
+// SetHost accepts a string in the form of http://url and sets
+// this as URL in serverConfig.
+func (co *serverConfig) SetURL(URL string) ServerConfigBuilder {
+	co.URL = URL
 	return co
 }
 
@@ -43,18 +42,11 @@ func (co *serverConfig) SetRetry(r int) ServerConfigBuilder {
 	return co
 }
 
-// SetHost accepts an int and sets the port number.
-func (co *serverConfig) SetPort(port int) ServerConfigBuilder {
-	co.Port = port
-	return co
-}
-
 // Build method returns a serverConfig struct.
 func (co *serverConfig) Build() serverConfig {
 
 	return serverConfig{
-		Host:  co.Host,
-		Port:  co.Port,
+		URL:   co.URL,
 		Retry: co.Retry,
 	}
 }
@@ -64,19 +56,8 @@ func NewClient(c serverConfig) *Client {
 	r := resty.New().
 		SetRESTMode().
 		SetRetryCount(c.Retry).
-		SetHostURL(endpoint(&c))
+		SetHostURL(c.URL)
 	return &Client{
 		Rest: r,
 	}
-}
-
-func endpoint(c *serverConfig) string {
-	// if port is uninitialised, port would be http/80.
-	if c.Port == 0 || c.Port == 80 {
-		return "http://" + c.Host
-	}
-	if c.Port == 443 {
-		return "https://" + c.Host
-	}
-	return "http://" + c.Host + ":" + strconv.Itoa(c.Port)
 }

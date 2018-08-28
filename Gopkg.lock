@@ -8,12 +8,6 @@
   version = "v1.8.0"
 
 [[projects]]
-  name = "github.com/go-test/deep"
-  packages = ["."]
-  revision = "6592d9cc0a499ad2d5f574fde80a2b5c5cc3b4f5"
-  version = "v1.0.1"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = [
@@ -46,6 +40,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "cdd8e30f5f41945b00b42e53c3bb40895e6fb9e7779fa7e02ae69ecde062fa88"
+  inputs-digest = "8abde375ca49b13225f6c67d1d31c0ebfee0339e6c97db95743c5e671733fdd4"
   solver-name = "gps-cdcl"
   solver-version = 1

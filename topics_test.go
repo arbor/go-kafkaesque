@@ -6,9 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/go-resty/resty"
-	"github.com/go-test/deep"
 )
 
 func fixture(path string) string {
@@ -18,24 +15,28 @@ func fixture(path string) string {
 	}
 	return string(b)
 }
+
 func TestHealth(t *testing.T) {
 	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.RequestURI {
+		case "/health":
+			fmt.Fprint(w, fixture("health.json"))
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, fixture("health.json"))
 	}))
 	defer apiStub.Close()
-	client := &Client{Rest: resty.New().SetRESTMode().SetHostURL(apiStub.URL)}
-	r, _ := client.getHealth()
-	if r.StatusCode() != 200 {
-		t.Errorf("getHealth() expected %v, got %v", 200, r.StatusCode())
+	config := NewConfig().SetURL(apiStub.URL).Build()
+	client := NewClient(config)
+	r, err := client.GetStatus()
+	if err != nil {
+		t.Errorf("%v", err.Error())
+		t.FailNow()
 	}
-	expectedJSON := Health{
-		Response: "Ok",
-	}
-	var data Health
-	client.Rest.JSONUnmarshal(r.Body(), &data)
-	if diff := deep.Equal(data, expectedJSON); diff != nil {
-		t.Errorf("getHealth() expected %#v, got %#v", expectedJSON, data)
+	if r.GetHealth() != "Ok" {
+		t.Errorf("r.GetHealth() expected %v, got %v", "Ok", r.GetHealth())
 	}
 }

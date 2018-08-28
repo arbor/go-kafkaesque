@@ -2,13 +2,14 @@ go-kafakesque
 --------------
 
 [![Go Documentation](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)][godocs]
-[![Build status](https://circleci.com/gh/packetloop/go-kafkaesque.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/packetloop/go-kafkaesque)
+[![Build status](https://circleci.com/gh/packetloop/go-kafkaesque.svg?style=shield&circle-token=ebd68735d49a76441b9272111ba0b12d472ee4d9)](https://circleci.com/gh/packetloop/go-kafkaesque)
 
 [godocs]: https://godoc.org/github.com/packetloop/go-kafkaesque
 
-A Go binding for Kafka binding. Since I couldn't
-manage to find one, hence, write a new one. One of the intention of
-having this package is to allow me to easily write a Terraform provider.
+A Go binding for [Kafka Admin Service](https://github.com/packetloop/kafka-admin-service)
+Since I couldn't manage to find one, hence, write a
+new one. One of the intention of having this package is
+to allow me to easily write a Terraform provider.
 
 ## Usage:
 
@@ -46,7 +47,7 @@ package main
 import (
 	"fmt"
 
-	singularity "github.com/packetloop/go-kafkaesque"
+	gokafkaesqueue "github.com/packetloop/go-kafkaesque"
 )
 ```
 
