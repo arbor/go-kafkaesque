@@ -37,7 +37,7 @@ func TestHealth(t *testing.T) {
 		t.Errorf("%v", err.Error())
 		t.FailNow()
 	}
-	if r.GetHealth() != "Ok" {
-		t.Errorf("r.GetHealth() expected %v, got %v", "Ok", r.GetHealth())
+	if r.GetResponse() != "Ok" {
+		t.Errorf("r.GetHealth() expected %v, got %v", "Ok", r.GetResponse())
 	}
 }

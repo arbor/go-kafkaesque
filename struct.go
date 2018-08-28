@@ -1,16 +1,17 @@
 package gokafkaesque
 
-// Topic have information about a Kafka topic.
-type Topic struct {
-	Response `json:"response"`
+// TopicResponse have information about a Kafka topic.
+type TopicResponse struct {
+	Topic `json:"response"`
 }
 
-// Response includes Kafka topic config, partitions, replication
+// Topic includes Kafka topic config, partitions, replication
 // factor and name.
-type Response struct {
-	Config            `json:"config"`
-	Partitions        int64 `json:"partitions"`
-	ReplicationFactor int64 `json:"replicationFactor"`
+type Topic struct {
+	*Config           `json:"config"`
+	Partitions        int64   `json:"partitions"`
+	ReplicationFactor int64   `json:"replicationFactor"`
+	Name              *string `json:"name"`
 }
 
 // Config contains a Kafka topic retention config in ms.
@@ -26,8 +27,8 @@ type Topics struct {
 	} `json:"response"`
 }
 
-// Health returns a response of OK.
-type Health struct {
+// GenericResponse returns a response of OK.
+type GenericResponse struct {
 	Response string `json:"response"`
 }
 
