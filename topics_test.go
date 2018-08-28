@@ -90,7 +90,7 @@ func TestGetTopic(t *testing.T) {
 			t.Errorf("client.GetTopic(%s) Partitions expected %v, got %v", tt.expectedName, tt.expectedPartitions, r.GetPartitions())
 		}
 		if r.GetReplicationFactor() != tt.expectedReplicationFactor {
-			t.Errorf("client.GetTopic(%s) Partitions expected %v, got %v", tt.expectedName, tt.expectedPartitions, r.GetReplicationFactor())
+			t.Errorf("client.GetTopic(%s) ReplicationFactor expected %v, got %v", tt.expectedName, tt.expectedReplicationFactor, r.GetReplicationFactor())
 		}
 	}
 }
@@ -158,6 +158,39 @@ func TestCreateTopic(t *testing.T) {
 		}
 		if r.Response != tt.expectedResponse {
 			t.Errorf("r.Count() expected %v, got %v", tt.expectedResponse, r.Response)
+		}
+	}
+}
+
+func TestDeleteTopic(t *testing.T) {
+	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.RequestURI {
+		case "/topics/foo":
+			fmt.Fprint(w, fixture("deleteTopic.json"))
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer apiStub.Close()
+	config := NewConfig().SetURL(apiStub.URL).Build()
+	client := NewClient(config)
+	var data = []struct {
+		name             string
+		expectedResponse string
+	}{
+		{"foo", "Topic deleted: foo"},
+	}
+	for _, tt := range data {
+		r, err := client.DeleteTopic(tt.name)
+		if err != nil {
+			t.Errorf("%v", err.Error())
+			t.FailNow()
+		}
+		if r.Response != tt.expectedResponse {
+			t.Errorf("client.DeleteTopic(%s) expected %v, got %v", tt.name, tt.expectedResponse, r.Response)
 		}
 	}
 }

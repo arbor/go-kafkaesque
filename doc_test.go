@@ -61,3 +61,16 @@ func ExampleClient_GetTopic() {
 	// partition: 2
 	// replication_factor: 5
 }
+
+func ExampleClient_DeleteTopic() {
+	config := gokafkaesque.NewConfig().
+		SetURL("http://localhost:8080").
+		SetRetry(3).
+		Build()
+	client := gokafkaesque.NewClient(config)
+	a, _ := client.DeleteTopic("foo")
+	fmt.Println(a.GetResponse())
+
+	// Output:
+	// Topic deleted: foo
+}
