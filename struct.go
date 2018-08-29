@@ -9,9 +9,8 @@ type Topic struct {
 // factor and name.
 type Response struct {
 	Config            `json:"config"`
-	Partitions        int64  `json:"partitions"`
-	ReplicationFactor int64  `json:"replicationFactor"`
-	Name              string `json:"name"`
+	Partitions        int64 `json:"partitions"`
+	ReplicationFactor int64 `json:"replicationFactor"`
 }
 
 // Config contains a Kafka topic retention config in ms.
