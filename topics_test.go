@@ -2,50 +2,16 @@ package gokafkaesque
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func fixture(path string) string {
-	b, err := ioutil.ReadFile("testdata/fixtures/" + path)
-	if err != nil {
-		panic(err)
-	}
-	return string(b)
-}
-
-func TestHealth(t *testing.T) {
-	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.RequestURI {
-		case "/health":
-			fmt.Fprint(w, fixture("health.json"))
-		default:
-			http.Error(w, "not found", http.StatusNotFound)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-	}))
-	defer apiStub.Close()
-	config := NewConfig().SetURL(apiStub.URL).Build()
-	client := NewClient(config)
-	r, err := client.GetStatus()
-	if err != nil {
-		t.Errorf("%v", err.Error())
-		t.FailNow()
-	}
-	if r.GetHealth() != "Ok" {
-		t.Errorf("r.GetHealth() expected %v, got %v", "Ok", r.GetHealth())
-	}
-}
-
 func TestGetTopics(t *testing.T) {
 	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.RequestURI {
 		case "/topics":
-			fmt.Fprint(w, fixture("topics.json"))
+			fmt.Fprint(w, fixture("listTopics.json"))
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
 			return
@@ -104,11 +70,12 @@ func TestGetTopic(t *testing.T) {
 	config := NewConfig().SetURL(apiStub.URL).Build()
 	client := NewClient(config)
 	var data = []struct {
-		expectedName        string
-		expectedRetentionMs string
-		expectedPartitions  int64
+		expectedName              string
+		expectedRetentionMs       string
+		expectedPartitions        int64
+		expectedReplicationFactor int64
 	}{
-		{"test_kafka-admin-service", "31536000000", 1},
+		{"test_kafka-admin-service", "31536000000", 1, 3},
 	}
 	for _, tt := range data {
 		r, err := client.GetTopic(tt.expectedName)
@@ -116,11 +83,14 @@ func TestGetTopic(t *testing.T) {
 			t.Errorf("%v", err.Error())
 			t.FailNow()
 		}
-		if r.Response.Config.RetentionMs != tt.expectedRetentionMs {
-			t.Errorf("RetentionMS expected %v, got %v", tt.expectedRetentionMs, r.Response.Config.RetentionMs)
+		if r.Config.GetRetentionMs() != tt.expectedRetentionMs {
+			t.Errorf("client.GetTopic(%s) RetentionMS expected %v, got %v", tt.expectedName, tt.expectedRetentionMs, r.Config.GetRetentionMs())
 		}
-		if r.Response.Partitions != tt.expectedPartitions {
-			t.Errorf("Partitions expected %v, got %v", tt.expectedPartitions, r.Response.Partitions)
+		if r.GetPartitions() != tt.expectedPartitions {
+			t.Errorf("client.GetTopic(%s) Partitions expected %v, got %v", tt.expectedName, tt.expectedPartitions, r.GetPartitions())
+		}
+		if r.GetReplicationFactor() != tt.expectedReplicationFactor {
+			t.Errorf("client.GetTopic(%s) Partitions expected %v, got %v", tt.expectedName, tt.expectedPartitions, r.GetReplicationFactor())
 		}
 	}
 }
@@ -128,8 +98,38 @@ func TestGetTopic(t *testing.T) {
 func TestInvalidGetTopicName(t *testing.T) {
 	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.RequestURI {
-		case "/topics/test_kafka-admin-service":
+		case "/topics/":
 			fmt.Fprint(w, fixture("topic.json"))
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer apiStub.Close()
+	config := NewConfig().SetURL(apiStub.URL).Build()
+	client := NewClient(config)
+	var data = []struct {
+		expectedName     string
+		expectedErrorMsg string
+	}{
+		{"abc", "Status"},
+	}
+	for _, tt := range data {
+		_, err := client.GetTopic(tt.expectedName)
+		if err == nil {
+			t.Errorf("%v", err.Error())
+			t.FailNow()
+		}
+	}
+}
+
+func TestCreateTopic(t *testing.T) {
+	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.RequestURI {
+		case "/topics":
+			fmt.Fprint(w, fixture("createTopic.json"))
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
 			return
@@ -141,17 +141,23 @@ func TestInvalidGetTopicName(t *testing.T) {
 	config := NewConfig().SetURL(apiStub.URL).Build()
 	client := NewClient(config)
 	var data = []struct {
-		expectedName        string
-		expectedRetentionMs string
-		expectedPartitions  int64
+		name              string
+		partitions        int64
+		replicationFactor int64
+		expectedResponse  string
 	}{
-		{"", "", 0},
+		{"foo", 1, 3, "Ok"},
+		{"bar", 1, 3, "Ok"},
 	}
 	for _, tt := range data {
-		_, err := client.GetTopic(tt.expectedName)
-		if err == nil {
+		params := NewTopic(tt.name).SetPartition(tt.partitions).SetReplicationFactor(tt.replicationFactor).BuildTopic()
+		r, err := client.CreateTopic(params)
+		if err != nil {
 			t.Errorf("%v", err.Error())
 			t.FailNow()
+		}
+		if r.Response != tt.expectedResponse {
+			t.Errorf("r.Count() expected %v, got %v", tt.expectedResponse, r.Response)
 		}
 	}
 }
