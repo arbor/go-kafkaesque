@@ -153,7 +153,7 @@ func (t *Topic) BuildTopic() Topic {
 // CreateTopic accepts a Topic and returns an "Ok" response
 // or error.
 func (client *Client) CreateTopic(t Topic) (GenericResponse, error) {
-	e := callError(fmt.Sprintf("CREATE TOPIC %v", t))
+	e := callError(fmt.Sprintf("CREATE TOPIC %+v", t))
 
 	resp, err := client.Rest.R().SetBody(t).Post("/topics")
 	if err != nil {
