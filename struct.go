@@ -16,8 +16,12 @@ type Topic struct {
 
 // Config contains a Kafka topic retention config in ms.
 type Config struct {
-	RetentionMs  string `json:"retention.ms"`
-	SegmentBytes string `json:"segment.bytes"`
+	RetentionMs       string `json:"retention.ms"`
+	SegmentBytes      string `json:"segment.bytes"`
+	CleanupPolicy     string `json:"cleanup.policy"`
+	MinInsyncReplicas string `json:"min.insync.replicas"`
+	RetentionBytes    string `json:"retention.bytes"`
+	SegmentMs         string `json:"segment.ms"`
 }
 
 // Topics is a list of topic names.
@@ -30,12 +34,4 @@ type Topics struct {
 // GenericResponse returns a response of OK.
 type GenericResponse struct {
 	Response string `json:"response"`
-}
-
-// ConfigMap contains additionalprop of a Kafka topic. Used to
-// updating existing Kafka topic.
-type ConfigMap struct {
-	AdditionalProp1 string `json:"additionalProp1"`
-	AdditionalProp2 string `json:"additionalProp2"`
-	AdditionalProp3 string `json:"additionalProp3"`
 }

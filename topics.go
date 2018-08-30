@@ -80,6 +80,29 @@ func (c *Config) GetSegmentBytes() string {
 
 }
 
+// GetCleanupPolicy is a method that returns cleanup policy of a topic.
+func (c *Config) GetCleanupPolicy() string {
+	return fmt.Sprintf("%s", c.CleanupPolicy)
+}
+
+// GetSegmentMs is a method that returns the time after which Kafka will
+// force the log to rollof a topic.
+func (c *Config) GetSegmentMs() string {
+	return fmt.Sprintf("%s", c.SegmentMs)
+}
+
+// GetRetentionBytes is a method that returns the retention bytes for the topic.
+// force the log to rollof a topic.
+func (c *Config) GetRetentionBytes() string {
+	return fmt.Sprintf("%s", c.RetentionBytes)
+}
+
+// GetMinInSyncReplicas is a method that returns the minimum number of insync replicas.
+// force the log to rollof a topic.
+func (c *Config) GetMinInSyncReplicas() string {
+	return fmt.Sprintf("%s", c.MinInsyncReplicas)
+}
+
 // TopicBuilder is an interface that builds a Kafka Topic
 // Config.
 type TopicBuilder interface {
