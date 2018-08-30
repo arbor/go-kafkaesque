@@ -40,7 +40,7 @@ func ExampleClient_CreateTopic() {
 		SetRetry(3).
 		Build()
 	client := gokafkaesque.NewClient(config)
-	t := gokafkaesque.NewTopic("foo").SetPartition(2).SetReplicationFactor(5).BuildTopic()
+	t := gokafkaesque.NewTopic("foo").SetPartitions(2).SetReplicationFactor(5).BuildTopic()
 	a, _ := client.CreateTopic(t)
 	fmt.Println(a.GetResponse())
 
