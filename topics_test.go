@@ -150,7 +150,7 @@ func TestCreateTopic(t *testing.T) {
 		{"bar", 1, 3, "Ok"},
 	}
 	for _, tt := range data {
-		params := NewTopic(tt.name).SetPartition(tt.partitions).SetReplicationFactor(tt.replicationFactor).BuildTopic()
+		params := NewTopic(tt.name).SetPartitions(tt.partitions).SetReplicationFactor(tt.replicationFactor).BuildTopic()
 		r, err := client.CreateTopic(params)
 		if err != nil {
 			t.Errorf("%v", err.Error())

@@ -106,7 +106,7 @@ func (c *Config) GetMinInSyncReplicas() string {
 // TopicBuilder is an interface that builds a Kafka Topic
 // Config.
 type TopicBuilder interface {
-	SetPartition(int64) TopicBuilder
+	SetPartitions(int64) TopicBuilder
 	SetReplicationFactor(int64) TopicBuilder
 	SetConfig(Config) TopicBuilder
 	BuildTopic() Topic
@@ -119,9 +119,9 @@ func NewTopic(name string) TopicBuilder {
 	}
 }
 
-// SetPartition is a method that accepts an int64 and sets Topic
+// SetPartitions is a method that accepts an int64 and sets Topic
 // partition.
-func (t *Topic) SetPartition(p int64) TopicBuilder {
+func (t *Topic) SetPartitions(p int64) TopicBuilder {
 	t.Partitions = p
 	return t
 }
