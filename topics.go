@@ -27,7 +27,6 @@ func (client *Client) GetTopics() (Topics, error) {
 		return data, nil
 	}
 	return Topics{}, e(fmt.Errorf("%v", resp.Status()))
-
 }
 
 // Count is a method that returns total size of topics.
@@ -44,7 +43,7 @@ func (t Topics) Topics() []string {
 func (client *Client) GetTopic(t string) (TopicResponse, error) {
 	e := callError(fmt.Sprintf("GET TOPIC %s", t))
 
-	resp, err := client.Rest.R().Get("/topics/" + t)
+	resp, err := client.Rest.R().Get(uriPath("/topics", t))
 	if err != nil {
 		return TopicResponse{}, e(err)
 	}
@@ -146,5 +145,30 @@ func (client *Client) CreateTopic(t Topic) (GenericResponse, error) {
 		return data, nil
 	}
 	return GenericResponse{}, e(fmt.Errorf("%v", resp.Status()))
+}
 
+// DeleteTopic method accepts a string topic, deletes this Kafka topic and
+// returns a string response or error.
+func (client *Client) DeleteTopic(t string) (GenericResponse, error) {
+	e := callError(fmt.Sprintf("DELETE TOPIC %v", t))
+
+	resp, err := client.Rest.R().Delete(uriPath("/topics", t))
+	if err != nil {
+		return GenericResponse{}, e(err)
+	}
+	if resp.StatusCode() >= 200 && resp.StatusCode() <= 299 {
+		var data GenericResponse
+		err := client.Rest.JSONUnmarshal(resp.Body(), &data)
+		if err != nil {
+			return GenericResponse{}, e(err)
+		}
+		return data, nil
+	}
+	return GenericResponse{}, e(fmt.Errorf("%v", resp.Status()))
+}
+
+// uriPath function accepts path and topic string and returns a
+// valid uri path of /topics/<topic_name>.
+func uriPath(p, t string) string {
+	return p + "/" + t
 }
