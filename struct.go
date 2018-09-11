@@ -13,7 +13,7 @@ type Topic struct {
 type Config struct {
 	RetentionMs       string `json:"retention.ms"`
 	SegmentBytes      string `json:"segment.bytes"`
-	CleanupPolicy     string `json:"cleanup.policy"`
+	CleanupPolicy     string `json:"cleanup.policy"` // Accepted values are: "deleted", "compact"
 	MinInsyncReplicas string `json:"min.insync.replicas"`
 	RetentionBytes    string `json:"retention.bytes"`
 	SegmentMs         string `json:"segment.ms"`

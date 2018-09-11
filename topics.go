@@ -65,18 +65,17 @@ func (t Topic) GetPartitions() string {
 
 // GetReplicationFactor is a method that returns partitions of a topic.
 func (t Topic) GetReplicationFactor() string {
-	return t.ReplicationFactor
+	return fmt.Sprintf("%s", t.ReplicationFactor)
 }
 
 // GetRetentionMs is a method that returns partitions of a topic.
 func (c *Config) GetRetentionMs() string {
 	return fmt.Sprintf("%s", c.RetentionMs)
-
 }
 
 // GetSegmentBytes is a method that returns partitions of a topic.
 func (c *Config) GetSegmentBytes() string {
-	return c.SegmentBytes
+	return fmt.Sprintf("%s", c.SegmentBytes)
 
 }
 
@@ -194,4 +193,24 @@ func (client *Client) DeleteTopic(t string) (Response, error) {
 // valid uri path of /topics/<topic_name>.
 func uriPath(p, t string) string {
 	return p + "/" + t
+}
+
+// UpdateTopic is a method that update a Kafka topic. This requires complete
+// config parameters set. If we want to allow only update optional params,
+// we need to implement PATCH request instead.
+func (client *Client) UpdateTopic(t Topic) (Response, error) {
+	e := callError(fmt.Sprintf("Update TOPIC %+v", t))
+	resp, err := client.Rest.R().SetBody(t).Put(uriPath("/topics", *t.Name))
+	if err != nil {
+		return Response{}, e(err)
+	}
+	if resp.StatusCode() >= 200 && resp.StatusCode() <= 299 {
+		var data Response
+		err := client.Rest.JSONUnmarshal(resp.Body(), &data)
+		if err != nil {
+			return Response{}, e(err)
+		}
+		return data, nil
+	}
+	return Response{}, e(fmt.Errorf("%v", resp.Status()))
 }
