@@ -45,8 +45,8 @@ func TestGetTopics(t *testing.T) {
 	}
 }
 
-func contains(ts Topics, t string) bool {
-	for _, i := range ts.Topics() {
+func contains(ts AllTopics, t string) bool {
+	for _, i := range ts.TopicsToString() {
 		if i == t {
 			return true
 		}
@@ -72,10 +72,10 @@ func TestGetTopic(t *testing.T) {
 	var data = []struct {
 		expectedName              string
 		expectedRetentionMs       string
-		expectedPartitions        int64
-		expectedReplicationFactor int64
+		expectedPartitions        string
+		expectedReplicationFactor string
 	}{
-		{"test_kafka-admin-service", "31536000000", 1, 3},
+		{"test_kafka-admin-service", "31536000000", "1", "3"},
 	}
 	for _, tt := range data {
 		r, err := client.GetTopic(tt.expectedName)
@@ -142,12 +142,11 @@ func TestCreateTopic(t *testing.T) {
 	client := NewClient(config)
 	var data = []struct {
 		name              string
-		partitions        int64
-		replicationFactor int64
+		partitions        string
+		replicationFactor string
 		expectedResponse  string
 	}{
-		{"foo", 1, 3, "Ok"},
-		{"bar", 1, 3, "Ok"},
+		{"foo", "1", "3", "foo created."},
 	}
 	for _, tt := range data {
 		params := NewTopic(tt.name).SetPartitions(tt.partitions).SetReplicationFactor(tt.replicationFactor).BuildTopic()
@@ -156,8 +155,8 @@ func TestCreateTopic(t *testing.T) {
 			t.Errorf("%v", err.Error())
 			t.FailNow()
 		}
-		if r.Response != tt.expectedResponse {
-			t.Errorf("r.Count() expected %v, got %v", tt.expectedResponse, r.Response)
+		if r.GetMessage() != tt.expectedResponse {
+			t.Errorf("r.Count() expected %v, got %v", tt.expectedResponse, r.GetMessage())
 		}
 	}
 }
@@ -181,7 +180,7 @@ func TestDeleteTopic(t *testing.T) {
 		name             string
 		expectedResponse string
 	}{
-		{"foo", "Topic deleted: foo"},
+		{"foo", "foo deleted."},
 	}
 	for _, tt := range data {
 		r, err := client.DeleteTopic(tt.name)
@@ -189,8 +188,8 @@ func TestDeleteTopic(t *testing.T) {
 			t.Errorf("%v", err.Error())
 			t.FailNow()
 		}
-		if r.Response != tt.expectedResponse {
-			t.Errorf("client.DeleteTopic(%s) expected %v, got %v", tt.name, tt.expectedResponse, r.Response)
+		if r.GetMessage() != tt.expectedResponse {
+			t.Errorf("client.DeleteTopic(%s) expected %v, got %v", tt.name, tt.expectedResponse, r.GetMessage())
 		}
 	}
 }

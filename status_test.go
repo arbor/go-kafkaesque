@@ -17,7 +17,7 @@ func fixture(path string) string {
 	return string(b)
 }
 
-func TestHealth(t *testing.T) {
+func TestHealthMessage(t *testing.T) {
 	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.RequestURI {
 		case "/health":
@@ -37,7 +37,7 @@ func TestHealth(t *testing.T) {
 		t.Errorf("%v", err.Error())
 		t.FailNow()
 	}
-	if r.GetResponse() != "Ok" {
-		t.Errorf("r.GetHealth() expected %v, got %v", "Ok", r.GetResponse())
+	if r.GetMessage() != "Ok" {
+		t.Errorf("r.GetMessage() expected %v, got %v", "Ok", r.GetMessage())
 	}
 }

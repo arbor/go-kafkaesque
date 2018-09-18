@@ -1,9 +1,8 @@
 {
-  "response": {
-    "config": {
-      "retention.ms": "31536000000"
-    },
-    "partitions": 1,
-    "replicationFactor": 3
+  "topic": "test_kafka-admin-service",
+  "partitions": "1",
+  "replicationFactor": "3",
+  "config": {
+    "retention.ms": "31536000000"
   }
 }
