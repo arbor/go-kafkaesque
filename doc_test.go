@@ -15,7 +15,7 @@ func ExampleNewClient() {
 		Build()
 	client := gokafkaesque.NewClient(config)
 	a, _ := client.GetStatus()
-	fmt.Println(a.GetResponse())
+	fmt.Println(a.GetMessage())
 
 	// Output:
 	// Ok
@@ -28,7 +28,7 @@ func ExampleClient_GetTopics() {
 		Build()
 	client := gokafkaesque.NewClient(config)
 	a, _ := client.GetTopics()
-	fmt.Println(a.Topics())
+	fmt.Println(a.TopicsToString())
 
 	// Output:
 	// [__confluent.support.metrics __consumer_offsets]
@@ -40,12 +40,12 @@ func ExampleClient_CreateTopic() {
 		SetRetry(3).
 		Build()
 	client := gokafkaesque.NewClient(config)
-	t := gokafkaesque.NewTopic("foo").SetPartitions(2).SetReplicationFactor(5).BuildTopic()
+	t := gokafkaesque.NewTopic("foo").SetPartitions("2").SetReplicationFactor("5").BuildTopic()
 	a, _ := client.CreateTopic(t)
-	fmt.Println(a.GetResponse())
+	fmt.Println(a.GetMessage())
 
 	// output:
-	// Ok
+	// foo created.
 }
 
 func ExampleClient_GetTopic() {
@@ -55,7 +55,7 @@ func ExampleClient_GetTopic() {
 		Build()
 	client := gokafkaesque.NewClient(config)
 	a, _ := client.GetTopic("foo")
-	fmt.Printf("partition: %d\nreplication_factor: %d\n", a.GetPartitions(), a.GetReplicationFactor())
+	fmt.Printf("partition: %s\nreplication_factor: %s\n", a.GetPartitions(), a.GetReplicationFactor())
 
 	// output:
 	// partition: 2
@@ -69,8 +69,8 @@ func ExampleClient_DeleteTopic() {
 		Build()
 	client := gokafkaesque.NewClient(config)
 	a, _ := client.DeleteTopic("foo")
-	fmt.Println(a.GetResponse())
+	fmt.Println(a.GetMessage())
 
 	// Output:
-	// Topic deleted: foo
+	// foo deleted.
 }

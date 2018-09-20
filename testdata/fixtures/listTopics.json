@@ -1,15 +1,13 @@
 {
-	"response": {
-		"topics": [
-			"__confluent.support.metrics",
-			"__consumer_offsets",
-			"stringer--ipv4-to-asn-changes",
-			"stringer--ipv4-to-country-changes",
-			"stringer--ipv4-to-naic-changes",
-			"stringer--neustar-rows",
-			"stringer--sqs-connector--kc-config",
-			"stringer--sqs-connector--kc-offset",
-			"test_kafka-admin-service"
-		]
-	}
+	"topics": [
+		"__confluent.support.metrics",
+		"__consumer_offsets",
+		"stringer--ipv4-to-asn-changes",
+		"stringer--ipv4-to-country-changes",
+		"stringer--ipv4-to-naic-changes",
+		"stringer--neustar-rows",
+		"stringer--sqs-connector--kc-config",
+		"stringer--sqs-connector--kc-offset",
+		"test_kafka-admin-service"
+	]
 }
