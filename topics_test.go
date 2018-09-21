@@ -193,3 +193,47 @@ func TestDeleteTopic(t *testing.T) {
 		}
 	}
 }
+
+// TestUpdateTopic test the update function. The important thing here to note is that all fields of the config need to be set
+// if not the update will return a 200 but none of the config will be updated
+func TestUpdateTopic(t *testing.T) {
+	var apiStub = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.RequestURI {
+		case "/topics/toto":
+			fmt.Fprint(w, fixture("updateTopic.json"))
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json;charset=UTF-8")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer apiStub.Close()
+	config := NewConfig().SetURL(apiStub.URL).Build()
+	client := NewClient(config)
+	topic := NewTopic("toto").BuildTopic()
+	topic.Config = &Config{
+		RetentionMs:       "1000",
+		SegmentBytes:      "10000000",
+		CleanupPolicy:     "delete",
+		MinInsyncReplicas: "1",
+		RetentionBytes:    "1000",
+		SegmentMs:         "10",
+	}
+	var data = []struct {
+		name             string
+		expectedResponse string
+	}{
+		{"toto", "toto updated."},
+	}
+	for _, tt := range data {
+		r, err := client.UpdateTopic(topic)
+		if err != nil {
+			t.Errorf("%v", err.Error())
+			t.FailNow()
+		}
+		if r.Message != tt.expectedResponse {
+			t.Errorf("r.Message expected %v, got %v", tt.expectedResponse, r.Message)
+		}
+	}
+}
