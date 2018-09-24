@@ -48,6 +48,28 @@ func ExampleClient_CreateTopic() {
 	// foo created.
 }
 
+func ExampleClient_CreateTopicWithConfig() {
+	config := gokafkaesque.NewConfig().
+		SetURL("http://localhost:8080").
+		SetRetry(3).
+		Build()
+	client := gokafkaesque.NewClient(config)
+	t := gokafkaesque.NewTopic("foo").SetPartitions("2").SetReplicationFactor("5").BuildTopic()
+	t.Config = &gokafkaesque.Config{
+		RetentionMs:       "1000",
+		SegmentBytes:      "10000000",
+		CleanupPolicy:     "delete",
+		MinInsyncReplicas: "1",
+		RetentionBytes:    "10",
+		SegmentMs:         "10",
+	}
+	a, _ := client.CreateTopic(t)
+	fmt.Println(a.GetMessage())
+
+	// output:
+	// foo created.
+}
+
 func ExampleClient_GetTopic() {
 	config := gokafkaesque.NewConfig().
 		SetURL("http://localhost:8080").

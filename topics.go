@@ -146,6 +146,7 @@ func (t *Topic) BuildTopic() Topic {
 		Name:              t.Name,
 		ReplicationFactor: t.ReplicationFactor,
 		Partitions:        t.Partitions,
+		Config:            t.Config,
 	}
 }
 
