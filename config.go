@@ -1,6 +1,9 @@
 package gokafkaesque
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/go-resty/resty"
 )
 
@@ -12,8 +15,9 @@ type Client struct {
 // serverConfig contains Kafka-admin-service HTTP endpoint and serverConfiguration for
 // retryablehttp client's retry options
 type serverConfig struct {
-	URL   string
-	Retry int
+	URL           string
+	Retry         int
+	RetryWaitTime time.Duration // Default is 100 milliseconds.
 }
 
 // ServerConfigBuilder sets port, host, http retry count config to
@@ -21,6 +25,7 @@ type serverConfig struct {
 type ServerConfigBuilder interface {
 	SetURL(string) ServerConfigBuilder
 	SetRetry(int) ServerConfigBuilder
+	SetRetryWaitTime(int) ServerConfigBuilder
 	Build() serverConfig
 }
 
@@ -42,12 +47,20 @@ func (co *serverConfig) SetRetry(r int) ServerConfigBuilder {
 	return co
 }
 
+// SetRetryWaitTime accepts an int and sets retry wait time
+// in seconds.
+func (co *serverConfig) SetRetryWaitTime(t int) ServerConfigBuilder {
+	co.RetryWaitTime = time.Duration(t) * time.Second
+	return co
+}
+
 // Build method returns a serverConfig struct.
 func (co *serverConfig) Build() serverConfig {
 
 	return serverConfig{
-		URL:   co.URL,
-		Retry: co.Retry,
+		URL:           co.URL,
+		Retry:         co.Retry,
+		RetryWaitTime: co.RetryWaitTime,
 	}
 }
 
@@ -56,7 +69,16 @@ func NewClient(c serverConfig) *Client {
 	r := resty.New().
 		SetRESTMode().
 		SetRetryCount(c.Retry).
-		SetHostURL(c.URL)
+		SetRetryWaitTime(c.RetryWaitTime).
+		SetHostURL(c.URL).
+		AddRetryCondition(
+			// Condition function will be provided with *resty.Response as a
+			// parameter. It is expected to return (bool, error) pair. Resty will retry
+			// in case condition returns true or non nil error.
+			func(r *resty.Response) (bool, error) {
+				return r.StatusCode() == http.StatusNotFound, nil
+			},
+		)
 	return &Client{
 		Rest: r,
 	}
