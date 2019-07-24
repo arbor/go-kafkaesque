@@ -5,7 +5,7 @@ package gokafkaesque_test
 import (
 	"fmt"
 
-	gokafkaesque "github.com/packetloop/go-kafkaesque"
+	gokafkaesque "github.com/arbor/go-kafkaesque"
 )
 
 func ExampleNewClient() {

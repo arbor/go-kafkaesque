@@ -1,4 +1,4 @@
-module github.com/packetloop/go-kafkaesque
+module github.com/arbor/go-kafkaesque
 
 go 1.12
 
