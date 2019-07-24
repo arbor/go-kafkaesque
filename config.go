@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-resty/resty"
+	"gopkg.in/resty.v1"
 )
 
 // Client contains Singularity endpoint for http requests

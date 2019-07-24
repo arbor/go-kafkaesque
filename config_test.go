@@ -3,7 +3,7 @@ package gokafkaesque
 import (
 	"testing"
 
-	"github.com/go-resty/resty"
+	"gopkg.in/resty.v1"
 )
 
 func TestBuild(t *testing.T) {
