@@ -5,7 +5,7 @@ jobs:
       - image: circleci/golang:1.12
         environment:
           GO111MODULE: "ON"
-    working_directory: /go/src/github.com/packetloop/go-kafkaesque
+    working_directory: /go/src/github.com/arbor/go-kafkaesque
     steps:
       - checkout
       - run: make coverage
